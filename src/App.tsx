@@ -11,6 +11,7 @@ import PackagesSection from './components/PackagesSection';
 import WeeklyScheduleSection from './components/WeeklyScheduleSection';
 import OrderFormSection from './components/OrderFormSection';
 import AboutUsSection from './components/AboutUsSection';
+import TodaysSpecialSection from './components/TodaysSpecialSection';
 import { MenuItem, TiffinPackage, OrderItem } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ShoppingBag, Phone, MapPin } from 'lucide-react';
@@ -112,15 +113,24 @@ export default function App() {
 
   // Helper for fast rendering of active section content
   const renderSectionContent = () => {
+    // Map cart items for easy lookups
+    const menuCartMap: { [key: string]: number } = {};
+    cart.forEach((i) => {
+      if (i.type === 'menu') {
+        menuCartMap[i.id] = (menuCartMap[i.id] || 0) + i.quantity;
+      }
+    });
+
     switch (activeSection) {
+      case 'todays-special':
+        return (
+          <TodaysSpecialSection
+            language={language}
+            onAddToOrder={handleAddToOrder}
+            cartItems={menuCartMap}
+          />
+        );
       case 'menu':
-        // Map cart items for easy lookups
-        const menuCartMap: { [key: string]: number } = {};
-        cart.forEach((i) => {
-          if (i.type === 'menu') {
-            menuCartMap[i.id] = (menuCartMap[i.id] || 0) + i.quantity;
-          }
-        });
         return (
           <MenuSection
             language={language}
@@ -166,6 +176,8 @@ export default function App() {
   // Get active section labels
   const getSectionTitle = () => {
     switch (activeSection) {
+      case 'todays-special':
+        return language === 'my' ? 'ယနေ့ အထူးဟင်းပွဲများ' : "Today's Special Menu";
       case 'menu':
         return language === 'my' ? 'ရိုးရိုးဟင်းပွဲမီနူး' : 'Regular A La Carte Menu';
       case 'packages':
@@ -182,6 +194,14 @@ export default function App() {
   };
 
   const totalCartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+
+  // Quick cart lookup map for main landing view
+  const mainCartMap: { [key: string]: number } = {};
+  cart.forEach((i) => {
+    if (i.type === 'menu') {
+      mainCartMap[i.id] = (mainCartMap[i.id] || 0) + i.quantity;
+    }
+  });
 
   return (
     <div className="min-h-screen bg-brand-cream text-brand-charcoal selection:bg-brand-red/30 selection:text-brand-charcoal relative overflow-x-hidden flex flex-col justify-between">
@@ -273,22 +293,19 @@ export default function App() {
                   </div>
                 </motion.div>
               ) : (
-                // Desktop Blank/Idle screen when no section is selected
-                <div className="hidden lg:flex flex-col items-center justify-center text-center py-24 bg-white/40 border border-dashed border-gray-200 rounded-3xl h-[600px] max-w-xl mx-auto space-y-4">
-                  <div className="w-16 h-16 rounded-full bg-brand-red-light flex items-center justify-center text-brand-red">
-                    <ShoppingBag className="w-6 h-6" />
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="font-display font-bold text-lg text-brand-charcoal">
-                      {language === 'my' ? 'ဟင်းပွဲနှင့် ဝန်ဆောင်မှုများ' : 'Welcome to Kaung Kyite'}
-                    </h3>
-                    <p className="text-xs text-gray-400 font-light max-w-xs mx-auto">
-                      {language === 'my' 
-                        ? 'မီနူးများ၊ တစ်ပတ်စာအစီအစဉ်များနှင့် ချိုင့်ဆွဲပက်ကေ့ဂျ်များကို လေ့လာရန် ဘယ်ဘက်ရှိ လင့်ခ်များကို နှိပ်ပါ။' 
-                        : 'Explore our menus, weekly curry roster, and premium tiffin plans by clicking on the links.'}
-                    </p>
-                  </div>
-                </div>
+                // Desktop Prominent Today's Special Section on default view
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="hidden lg:block space-y-4"
+                >
+                  <TodaysSpecialSection
+                    language={language}
+                    onAddToOrder={handleAddToOrder}
+                    cartItems={mainCartMap}
+                  />
+                </motion.div>
               )}
             </AnimatePresence>
           </div>

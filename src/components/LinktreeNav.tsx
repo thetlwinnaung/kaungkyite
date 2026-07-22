@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Box, Calendar, FileText, Info, ChevronRight, ShoppingCart } from 'lucide-react';
+import { BookOpen, Box, Calendar, FileText, Info, ChevronRight, ShoppingCart, Flame, Sparkles } from 'lucide-react';
 
 interface LinktreeNavProps {
   activeSection: string | null;
@@ -16,6 +16,15 @@ export default function LinktreeNav({
 }: LinktreeNavProps) {
   
   const navItems = [
+    {
+      id: 'todays-special',
+      labelMy: 'ယနေ့ အထူးဟင်းပွဲများ',
+      labelEn: "Today's Special Menu",
+      icon: Flame,
+      color: 'text-amber-600 bg-amber-100/90',
+      tag: language === 'my' ? 'ယနေ့အထူး' : 'HOT TODAY',
+      isFeatured: true
+    },
     {
       id: 'menu',
       labelMy: 'ရိုးရိုးဟင်းပွဲမီနူး',
@@ -70,10 +79,12 @@ export default function LinktreeNav({
             key={item.id}
             id={`nav-btn-${item.id}`}
             onClick={() => setActiveSection(item.id)}
-            className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all duration-300 group cursor-pointer text-left
+            className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all duration-300 group cursor-pointer text-left relative overflow-hidden
               ${isActive 
-                ? 'border-brand-red bg-brand-red-light/60 shadow-xs' 
-                : 'border-gray-200/80 bg-white hover:border-gray-300 hover:bg-gray-50 hover:shadow-md'
+                ? 'border-brand-red bg-brand-red-light/60 shadow-xs ring-1 ring-brand-red/30' 
+                : item.isFeatured
+                  ? 'border-amber-300 bg-gradient-to-r from-amber-50/90 via-orange-50/50 to-white hover:border-amber-400 hover:shadow-md'
+                  : 'border-gray-200/80 bg-white hover:border-gray-300 hover:bg-gray-50 hover:shadow-md'
               }
             `}
           >
@@ -85,7 +96,7 @@ export default function LinktreeNav({
               
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-gray-800 text-sm sm:text-[15px] block truncate">
+                  <span className={`font-semibold text-sm sm:text-[15px] block truncate ${item.isFeatured ? 'text-amber-900 font-bold' : 'text-gray-800'}`}>
                     {language === 'my' ? item.labelMy : item.labelEn}
                   </span>
                   
@@ -99,8 +110,8 @@ export default function LinktreeNav({
                 
                 <span className="text-xs text-gray-400 font-light block mt-0.5">
                   {language === 'my' 
-                    ? (item.id === 'order' ? 'မှာယူမည့် စုစုပေါင်း တွက်ချက်ရန်' : `ကြည့်ရှုရန် နှိပ်ပါ`)
-                    : (item.id === 'order' ? 'Calculate total & book' : 'Click to view details')
+                    ? (item.id === 'todays-special' ? '၁၂ မျိုးပါ ယနေ့ဟင်းပွဲများ ကြည့်ရန်' : item.id === 'order' ? 'မှာယူမည့် စုစုပေါင်း တွက်ချက်ရန်' : `ကြည့်ရှုရန် နှိပ်ပါ`)
+                    : (item.id === 'todays-special' ? '12 special dishes prepared today' : item.id === 'order' ? 'Calculate total & book' : 'Click to view details')
                   }
                 </span>
               </div>
@@ -108,10 +119,16 @@ export default function LinktreeNav({
 
             {/* Right Tag and Arrow */}
             <div className="flex items-center gap-2 shrink-0">
-              <span className="hidden sm:inline-block text-[10px] font-medium tracking-wide uppercase px-2 py-0.5 rounded-md bg-gray-100 text-gray-500 group-hover:bg-brand-red-light group-hover:text-brand-red transition-colors duration-200">
+              <span className={`text-[10px] font-bold tracking-wide uppercase px-2 py-0.5 rounded-md transition-colors duration-200 ${
+                item.isFeatured
+                  ? 'bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-2xs'
+                  : 'hidden sm:inline-block bg-gray-100 text-gray-500 group-hover:bg-brand-red-light group-hover:text-brand-red'
+              }`}>
                 {item.tag}
               </span>
-              <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform duration-300 group-hover:translate-x-1 ${isActive ? 'text-brand-red rotate-90' : ''}`} />
+              <ChevronRight className={`w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 ${
+                isActive ? 'text-brand-red rotate-90' : item.isFeatured ? 'text-amber-600' : 'text-gray-400'
+              }`} />
             </div>
           </button>
         );

@@ -1,3 +1,21 @@
+export interface TodaysSpecialItem {
+  id: string;
+  name: string;
+  nameEn?: string;
+  price: number;
+  recommended?: boolean;
+  category?: 'curry' | 'soup' | 'side' | 'dessert';
+  description?: string;
+  descriptionEn?: string;
+}
+
+export interface DailySpecialRoster {
+  day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+  dateLabelMy: string;
+  dateLabelEn: string;
+  items: TodaysSpecialItem[];
+}
+
 export interface MenuItem {
   id: string;
   name: string;
