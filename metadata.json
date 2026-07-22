@@ -1,0 +1,6 @@
+{
+  "name": "Kaung Kyite Burmese Cuisine",
+  "description": "Premium Burmese Cuisine and Tiffin Box (ချိုင့်ဆွဲ) Service Landing Page - Featuring interactive menus, custom subscription packages, weekly dish lists, and a built-in order calculator.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
