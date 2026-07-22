@@ -39,19 +39,18 @@ export default function OrderFormSection({
   // Telegram Integration state
   const [telegramStatus, setTelegramStatus] = useState<'idle' | 'sending' | 'success' | 'failed'>('idle');
   const [telegramError, setTelegramError] = useState<string | null>(null);
-  const [telegramChatId, setTelegramChatId] = useState<string>(() => {
-    // 1. Check URL query parameter 'chat_id'
+
+  // Directly derive telegramChatId from URL param, environment variable VITE_TELEGRAM_CHAT_ID, or fallback
+  const telegramChatId = useMemo(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const queryChatId = urlParams.get('chat_id');
     if (queryChatId) return queryChatId;
 
-    // 2. Check environment variable VITE_TELEGRAM_CHAT_ID
     const envChatId = (import.meta as any).env?.VITE_TELEGRAM_CHAT_ID;
     if (envChatId) return envChatId;
 
-    // 3. Fallback default
     return "-1002446700057";
-  });
+  }, []);
 
   // Calculate delivery fee
   const deliveryFee = useMemo(() => {
@@ -213,13 +212,13 @@ export default function OrderFormSection({
               <p className="font-light leading-relaxed">
                 {telegramStatus === 'sending' && (
                   language === 'my' 
-                    ? `မှာယူမှုအချက်အလက်များကို ဆိုင်၏ တယ်လီဂရမ် (Chat ID: ${telegramChatId}) သို့ ပို့ဆောင်နေပါသည်...`
-                    : `Sending order details to shop's Telegram bot (Chat ID: ${telegramChatId})...`
+                    ? `မှာယူမှုအချက်အလက်များကို ဆိုင်၏ တယ်လီဂရမ်သို့ ပို့ဆောင်နေပါသည်...`
+                    : `Sending order details to shop's Telegram bot...`
                 )}
                 {telegramStatus === 'success' && (
                   language === 'my'
-                    ? `မှာယူမှုကို ဆိုင်၏ တယ်လီဂရမ် (Chat ID: ${telegramChatId}) သို့ တိုက်ရိုက် ပေးပို့ပြီးပါပြီ။`
-                    : `Order details successfully dispatched to the shop's Telegram chat (${telegramChatId})!`
+                    ? `မှာယူမှုကို ဆိုင်၏ တယ်လီဂရမ်သို့ တိုက်ရိုက် ပေးပို့ပြီးပါပြီ။`
+                    : `Order details successfully dispatched to the shop's Telegram!`
                 )}
                 {telegramStatus === 'failed' && (
                   <>
@@ -656,29 +655,6 @@ export default function OrderFormSection({
               className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:border-brand-red focus:ring-1 focus:ring-brand-red outline-hidden transition resize-none"
               id="notes-input"
             />
-          </div>
-
-          {/* Telegram Chat ID Configuration (Optional / Admin settings for testing) */}
-          <div className="p-3 bg-gray-50 rounded-2xl border border-gray-200/60 space-y-2">
-            <div className="flex justify-between items-center">
-              <label className="font-bold text-[10px] text-gray-500 uppercase tracking-wider block">
-                {language === 'my' ? 'တယ်လီဂရမ် ချိတ်ဆက်မှု (စမ်းသပ်ရန်)' : 'Telegram Dispatch Chat ID (For Testing)'}
-              </label>
-              <span className="text-[9px] text-gray-400 font-light">Bot: @KaungKyiteOrderBot</span>
-            </div>
-            <input
-              type="text"
-              value={telegramChatId}
-              onChange={(e) => setTelegramChatId(e.target.value)}
-              placeholder="e.g. -1002446700057 or your user chat ID"
-              className="w-full px-3 py-1.5 border border-gray-200 rounded-lg focus:border-brand-red focus:ring-1 focus:ring-brand-red outline-hidden transition bg-white text-xs font-mono"
-              id="telegram-chat-id-input"
-            />
-            <p className="text-[10px] text-gray-400 font-light leading-tight">
-              {language === 'my'
-                ? 'မှာယူမှုအချက်အလက်များကို ပေးပို့ရန် တယ်လီဂရမ် Chat ID (သို့မဟုတ် ဂရု ID) ကို ထည့်သွင်းပါ။'
-                : 'Enter your Telegram Chat ID or Group ID to test receiving order notifications instantly.'}
-            </p>
           </div>
 
           {/* Form submit button */}
